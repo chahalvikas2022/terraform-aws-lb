@@ -30,7 +30,7 @@
 - ✅ Supports **cross-zone load balancing**, **access logs**, and **connection draining**
 - ✅ Enables tagging and naming conventions through the **Labels module**
 - ✅ Follows AWS best practices for **high availability** and **fault tolerance**
-- ✅ Fully compatible with other **OpsStation Terraform modules**
+- ✅ Fully compatible with other **vikas Terraform modules**
 ---
 
 # Example : alb
