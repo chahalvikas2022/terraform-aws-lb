@@ -1,24 +1,22 @@
 # # 🏗️ Terraform-AWS-lb
 
-[![OpsStation](https://img.shields.io/badge/Made%20by-OpsStation-blue?style=flat-square&logo=terraform)](https://www.opsstation.com)
+[![vikas](https://img.shields.io/badge/Made%20by-vikas-blue?style=flat-square&logo=terraform)]
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Terraform](https://img.shields.io/badge/Terraform-1.13%2B-purple.svg?logo=terraform)](#)
-[![CI](https://github.com/OpsStation/terraform-aws-ec2/actions/workflows/ci.yml/badge.svg)](https://github.com/OpsStation/terraform-aws-ec2/actions/workflows/ci.yml)
+[![CI](https://github.com/chahalvikas2022/terraform-aws-ec2/actions/workflows/ci.yml/badge.svg)](https://github.com/chahalvikas2022/terraform-aws-ec2/actions/workflows/ci.yml)
 
-> 🌩️ **A production-grade, reusable AWS Ec2 module by [OpsStation](https://www.opsstation.com)**
+> 🌩️ **A production-grade, reusable AWS Ec2 module by [vikas]**
 > Designed for reliability, performance, and security — following AWS networking best practices.
 ---
 
-## 🏢 About OpsStation
+## 🏢 About vikas
 
-**OpsStation** delivers **Cloud & DevOps excellence** for modern teams:
+**vikas** delivers **Cloud & DevOps excellence** for modern teams:
 - 🚀 **Infrastructure Automation** with Terraform, Ansible & Kubernetes
 - 💰 **Cost Optimization** via scaling & right-sizing
 - 🛡️ **Security & Compliance** baked into CI/CD pipelines
 - ⚙️ **Fully Managed Operations** across AWS, Azure, and GCP
 
-> 💡 Need enterprise-grade DevOps automation?
-> 👉 Visit [**www.opsstation.com**](https://www.opsstation.com) or email **hello@opsstation.com**
 
 ---
 ## 🌟 Features
@@ -38,7 +36,7 @@
 # Example : alb
 ```hcl
 module "alb" {
-  source                     = "git::https://github.com/opsstation/terraform-aws-lb.git?ref=v1.0.0"
+  source                     = "git::https://github.com/chahalvikas2022/terraform-aws-lb.git"
 
   name                       = local.name
   environment = local.environment
@@ -112,7 +110,7 @@ module "alb" {
 # Example : clb
 ```hcl
 module "clb" {
-  source             = "git::https://github.com/opsstation/terraform-aws-lb.git?ref=v1.0.0"
+  source             = "git::https://github.com/chahalvikas2022/terraform-aws-lb.git"
 
   name               = "app"
   load_balancer_type = "classic"
@@ -149,7 +147,7 @@ module "clb" {
 # Example : nlb
 ```hcl
 module "nlb" {
-  source                     = "git::https://github.com/opsstation/terraform-aws-lb.git?ref=v1.0.0"
+  source                     = "git::https://github.com/chahalvikas2022/terraform-aws-lb.git"
 
   name                       = "app"
   enable                     = true
@@ -230,5 +228,5 @@ module "nlb" {
 
 ---
 
-### 💙 Maintained by [OpsStation](https://www.opsstation.com)
-> OpsStation — Simplifying Cloud, Securing Scale.
+### 💙 Maintained by [vikas]
+> vikas — Simplifying Cloud, Securing Scale.
