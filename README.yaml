@@ -1,0 +1,246 @@
+name: terraform-aws-lb
+license: MIT
+github_repo: opsstation/terraform-aws-lb
+registry_publish: true
+
+tags:
+  - terraform
+  - aws
+  - loadbalancer
+  - alb
+  - nlb
+  - clb
+  - networking
+  - devops
+  - opsstation
+
+description: |
+  A production-grade, reusable AWS Load Balancer module (ALB, NLB, CLB) by OpsStation.
+  Designed for reliability, performance, and security — following AWS networking best practices.
+
+introduction: |
+  This module allows you to deploy and manage AWS Load Balancers including
+  Application Load Balancer (ALB), Network Load Balancer (NLB), and Classic Load Balancer (CLB).
+  It supports listeners, target groups, SSL/TLS, access logs, and integrates seamlessly with EC2, ASG, and ECS.
+  Built following OpsStation best practices for high availability, scalability, and fault tolerance.
+
+about_opsstation: |
+  ## 🏢 About OpsStation
+  OpsStation delivers Cloud & DevOps excellence for modern teams:
+
+  - 🚀 Infrastructure Automation (Terraform, Kubernetes, Ansible)
+  - 💰 Cost Optimization
+  - 🛡️ Security & Compliance
+  - ⚙️ Fully Managed Cloud Operations (AWS / Azure / GCP)
+
+  Visit: **https://www.opsstation.com**
+  Contact: **hello@opsstation.com**
+
+features:
+  - Creates and manages **AWS Load Balancers** (ALB, NLB, CLB)
+  - Supports **internal** and **internet-facing** LBs
+  - Auto-configures **listeners**, **listener rules**, and **target groups**
+  - Supports **HTTP, HTTPS, TCP, UDP**
+  - Integrates with **EC2, AutoScaling Groups, ECS**
+  - Supports **ACM SSL/TLS certificates**
+  - Cross-zone load balancing + access logs
+  - Works with **Labels module** for uniform tagging
+  - Follows AWS best practices for HA and reliability
+  - Fully compatible with OpsStation modules
+
+examples:
+  - name: alb
+    content: |
+      ```hcl
+      module "alb" {
+        source                     = "git::https://github.com/opsstation/terraform-aws-lb.git?ref=v1.0.0"
+        name                       = local.name
+        environment                = local.environment
+        enable                     = true
+        internal                   = true
+        load_balancer_type         = "application"
+        instance_count             = 2
+        subnets                    = module.subnet.public_subnet_id
+        target_id                  = module.ec2.instance_id
+        vpc_id                     = module.vpc.id
+        allowed_ip                 = [module.vpc.vpc_cidr_block]
+        allowed_ports              = [3306]
+        enable_deletion_protection = false
+        with_target_group          = true
+        https_enabled              = false
+        http_enabled               = true
+        https_port                 = 443
+        listener_type              = "forward"
+        target_group_port          = 80
+
+        http_tcp_listeners = [
+          {
+            port               = 80
+            protocol           = "TCP"
+            target_group_index = 0
+          },
+          {
+            port               = 81
+            protocol           = "TCP"
+            target_group_index = 0
+          },
+        ]
+
+        https_listeners = [
+          {
+            port               = 443
+            protocol           = "TLS"
+            target_group_index = 0
+            certificate_arn    = ""
+          },
+          {
+            port               = 84
+            protocol           = "TLS"
+            target_group_index = 0
+            certificate_arn    = ""
+          },
+        ]
+
+        target_groups = [
+          {
+            backend_protocol     = "HTTP"
+            backend_port         = 80
+            target_type          = "instance"
+            deregistration_delay = 300
+            health_check = {
+              enabled             = true
+              interval            = 30
+              path                = "/"
+              port                = "traffic-port"
+              healthy_threshold   = 3
+              unhealthy_threshold = 3
+              timeout             = 10
+              protocol            = "HTTP"
+              matcher             = "200-399"
+            }
+          }
+        ]
+      }
+      ```
+
+  - name: clb
+    content: |
+      ```hcl
+      module "clb" {
+        source             = "git::https://github.com/opsstation/terraform-aws-lb.git?ref=v1.0.0"
+        name               = "app"
+        load_balancer_type = "classic"
+        clb_enable         = true
+        internal           = true
+        vpc_id             = module.vpc.id
+        target_id          = module.ec2.instance_id
+        subnets            = module.public_subnets.public_subnet_id
+        with_target_group  = true
+
+        listeners = [
+          {
+            lb_port            = 22000
+            lb_protocol        = "TCP"
+            instance_port      = 22000
+            instance_protocol  = "TCP"
+            ssl_certificate_id = null
+          },
+          {
+            lb_port            = 4444
+            lb_protocol        = "TCP"
+            instance_port      = 4444
+            instance_protocol  = "TCP"
+            ssl_certificate_id = null
+          }
+        ]
+
+        health_check_target              = "TCP:4444"
+        health_check_timeout             = 10
+        health_check_interval            = 30
+        health_check_unhealthy_threshold = 5
+        health_check_healthy_threshold   = 5
+      }
+      ```
+
+  - name: nlb
+    content: |
+      ```hcl
+      module "nlb" {
+        source                     = "git::https://github.com/opsstation/terraform-aws-lb.git?ref=v1.0.0"
+        name                       = "app"
+        enable                     = true
+        internal                   = false
+        load_balancer_type         = "network"
+        instance_count             = 1
+        subnets                    = module.public_subnets.public_subnet_id
+        target_id                  = module.ec2.instance_id
+        vpc_id                     = module.vpc.id
+        enable_deletion_protection = false
+        with_target_group          = true
+
+        http_tcp_listeners = [
+          {
+            port               = 80
+            protocol           = "TCP"
+            target_group_index = 0
+          },
+          {
+            port               = 81
+            protocol           = "TCP"
+            target_group_index = 0
+          },
+        ]
+
+        target_groups = [
+          {
+            backend_protocol = "TCP"
+            backend_port     = 80
+            target_type      = "instance"
+          },
+          {
+            backend_protocol = "TCP"
+            backend_port     = 81
+            target_type      = "instance"
+          },
+        ]
+
+        https_listeners = [
+          {
+            port               = 443
+            protocol           = "TLS"
+            target_group_index = 1
+            certificate_arn    = ""
+          },
+          {
+            port               = 84
+            protocol           = "TLS"
+            target_group_index = 1
+            certificate_arn    = ""
+          },
+        ]
+      }
+      ```
+
+outputs: |
+  ### 🔐 Outputs (AWS Load Balancer Module)
+
+  | Name | Description |
+  |------|-------------|
+  | id | Load Balancer ID |
+  | arn | Load Balancer ARN |
+  | name | LB Name |
+  | dns_name | DNS Name |
+  | zone_id | Hosted Zone ID |
+  | vpc_id | VPC ID |
+  | security_groups | Security Groups attached |
+  | subnets | LB Subnets |
+  | load_balancer_type | LB Type |
+  | arn_suffix | ARN Suffix |
+  | listener_arns | Listener ARNs |
+  | target_group_arns | Target Group ARNs |
+  | access_logs_bucket | S3 bucket for logs |
+  | tags | Tags applied |
+
+footer: |
+  Maintained with ❤️ by [OpsStation](https://www.opsstation.com)
+  OpsStation — Simplifying Cloud, Securing Scale.
